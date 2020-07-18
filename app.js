@@ -15,58 +15,56 @@ function askQuestions(){
     return inquirer.prompt(questions.general)
 };
 function askManagerQuestions(){
-    return inquirer.prompt(questions.Manager)
+    return inquirer.prompt(questions.manager)
 };
 function askEngineerQuestions(){
-    return inquirer.prompt(questions.Engineer)
+    return inquirer.prompt(questions.engineer)
 };
 function askInternQuestions(){
-    return inquirer.prompt(questions.Intern)
+    return inquirer.prompt(questions.intern)
 }
 function otraVez(){
     return inquirer.prompt(questions.again)
 }
 
 async function employeeList(){
-    const managerEmp = {};
-    const internList = [];
-    const engineerList = [];
-    const again = true;
-    const em = [managerEmp, internList, engineerList]
-
+    let again = true;
+    const employees = []
     while(again){
-    id += 1;
-    let employee = await askQuestions();
-    let employeeFullName = `${employee.firstname} ${employee.lastname}`
-    let employeeEmail = employeeFullName.trim() + '@working.com'
-        console.log(employee.role)
-    switch(employee.role){
-        case 'Manager':
-            let manRoleQuestions = await askManagerQuestions();
-            employee = new Manager(employeeFullName, id, employeeEmail, manRoleQuestions.office)
-            managerEmp.push(employee);
-            break;
-        case 'Intern':
-            let intRoleQuestions = await askInternQuestions();
-            employee = new Intern(employeeFullName, id, employeeEmail, intRoleQuestions.school)
-            internList.push(employee);
-            break;
-        case 'Engineer':
-            let engRoleQuestions = await askEngineerQuestions();
-            employee = new Engineer(employeeFullName, id, employeeEmail, engRoleQuestions.github)
-            engineerList.push(employee);
-            break;
+        id += 1;
+        let employee = await askQuestions();
+        let employeeFullName = `${employee.firstname} ${employee.lastname}`
+        let employeeEmail = `${employee.firstname}${employee.lastname}` + '@working.com'
+        console.log(employee)    
+        switch(employee.role){
+            case 'Manager':
+                let manRoleQuestions = await askManagerQuestions();
+                employee = new Manager(employeeFullName, id, employeeEmail, manRoleQuestions.office)
+                employees.push(employee)
+                break;
+            case 'Intern':
+                let intRoleQuestions = await askInternQuestions();
+                employee = new Intern(employeeFullName, id, employeeEmail, intRoleQuestions.school)
+                employees.push(employee)
+                break;
+            case 'Engineer':
+                let engRoleQuestions = await askEngineerQuestions();
+                employee = new Engineer(employeeFullName, id, employeeEmail, engRoleQuestions.github)
+                employees.push(employee)
+                break;
+
         };
 
-        again = otraVez();
-        console.log(em)
-    }
-    const html = render(em);
+        again = await otraVez() 
+        again = again.again
+    } // while
+    const html = render(employees);
     fs.writeFile(outputPath, html, (err) => {
         if(err) throw err;
         console.log('Great Success');        
-    })
+})
 }
+
 
 
 employeeList();
